@@ -3,8 +3,8 @@ import './App.css';
 
 import {useState} from "react"
 
-var Usernames = new Array("John", "Bob");
-var Passwords = new Array("password", "hi");
+exports.Usernames = new Array("John", "Bob");
+exports.Passwords = new Array("password", "hi");
 
 
 
@@ -15,6 +15,8 @@ function App() {
   const [showPWD, setShowPWD] = useState(false);
   function handleSubmit(e){
     e.preventDefault();
+    Usernames.push(name)
+    Passwords.push(pwd)
     for(let i=0; i<Usernames.length; i++){
       if(name == Usernames[i]){
           setShowName(true);
@@ -25,6 +27,7 @@ function App() {
           setShowPWD(true);
       }
     }
+
   }
   return (
     <div className="App">
