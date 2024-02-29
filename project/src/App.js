@@ -15,19 +15,24 @@ function App() {
   const [showPWD, setShowPWD] = useState(false);
   function handleSubmit(e){
     e.preventDefault();
-    Usernames.push(name)
-    Passwords.push(pwd)
-    for(let i=0; i<Usernames.length; i++){
-      if(name == Usernames[i]){
-          setShowName(true);
-      }
-    }
-    for(let i=0; i<Passwords.length; i++){
-      if(pwd == Passwords[i]){
-          setShowPWD(true);
-      }
-    }
-
+    fetch('/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: name,
+        password: pwd
+      })
+    })
+    
+    // for(let i=0; i<Usernames.length; i++){
+    //   if(name == Usernames[i]){
+    //       setShowName(true);
+    //   }
+    // }
+    // for(let i=0; i<Passwords.length; i++){
+    //   if(pwd == Passwords[i]){
+    //       setShowPWD(true);
+    //   }
+    // }
   }
   return (
     <div className="App">
