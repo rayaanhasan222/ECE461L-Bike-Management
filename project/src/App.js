@@ -1,10 +1,9 @@
-import logo from './logo.svg';
 import './App.css';
 
 import {useState} from "react"
 
-exports.Usernames = new Array("John", "Bob");
-exports.Passwords = new Array("password", "hi");
+export const Usernames = ["John", "Bob"];
+export const Passwords = ["password", "hi"];
 
 
 
@@ -23,16 +22,6 @@ function App() {
       })
     })
     
-    // for(let i=0; i<Usernames.length; i++){
-    //   if(name == Usernames[i]){
-    //       setShowName(true);
-    //   }
-    // }
-    // for(let i=0; i<Passwords.length; i++){
-    //   if(pwd == Passwords[i]){
-    //       setShowPWD(true);
-    //   }
-    // }
   }
   return (
     <div className="App">
