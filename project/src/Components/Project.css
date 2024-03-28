@@ -1,0 +1,76 @@
+/* Project container styles */
+.projectlist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between projects */
+  padding: 10px; /* Space inside project list */
+  border: 1px solid #ccc; /* Add border around project list */
+  border-radius: 5px; /* Round the corners of the project list */
+  background-color: #f9f9f9; /* Light gray background color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow to project list */
+}
+
+.project-container { 
+  display: flex;
+  justify-content: space-between; /* Space between projects */
+  margin-bottom: 10px; /* Space between projects */
+  padding: 10px; /* Space inside project container */
+  border: 1px solid #ccc; /* Add border around project container */
+  border-radius: 5px; /* Round the corners of the project container */
+  background-color: #f9f9f9; /* Light gray background color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow to project container */
+}
+
+/* Project header and user list styles */
+.project-details {
+  display: flex;
+  align-items: flex-start;
+}
+
+.project-details h3{
+  margin-right: 20px;
+}
+
+.project-details ul {
+  list-style: none; /* Removes bullets */
+  padding: 0; /* Removes default padding */
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column; /* Aligns list items in a column */
+  flex-wrap: wrap; /* Allows list items to wrap to the next line if necessary */
+  gap: 10px; /* Optional: adds space between list items */
+}
+
+.project-details li {
+  font-weight: normal;
+}
+
+/* HWSet container styles */
+.hw-set {
+  display: flex; /* Align items horizontally */
+  align-items: center; /* Center items vertically */
+  padding: 10px; /* Space inside HWSet container */
+  background-color: #f9f9f9; /* Light gray background color */
+  margin-bottom: 10px; /* Space between HWSets */
+  
+}
+
+.hw-setdetails {
+  display: flex;
+  align-items: center;
+}
+
+/* Input and button styles */
+input[type="number"], .hw-set button {
+  margin-right: 10px; /* Space between input/buttons */
+}
+
+/* Ensure buttons are aligned horizontally */
+.hw-set-controls {
+  display: flex; /* Align buttons horizontally */
+}
+
+/* Join/Leave button styles */
+button.join-button, button.leave-button {
+  /* Add styles for join/leave button, like padding, background-color, etc. */
+}

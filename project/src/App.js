@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import ProjectList from './Components/ProjectList';
 import './App.css';
 
 // Define the EnterQty component
@@ -29,7 +30,8 @@ function NavBar() {
       <Link to="/home">Homepage</Link> | 
       <Link to="/login">Login</Link> | 
       <Link to="/signup">Sign Up</Link> |
-      <Link to="/database">Database</Link>
+      <Link to="/database">Database</Link> |
+      <Link to="/ProjectList">Project List</Link> |
     </nav>
   );
 }
@@ -133,6 +135,7 @@ function App() {
               <Route path="/home" element={<HomePage />} />
               <Route path="/database" element={<DatabasePage />} />
               <Route path="/" element={<HomePage />} />
+              <Route path="/ProjectList" element={<ProjectList />} />
           </Routes>
       </Router>
   );

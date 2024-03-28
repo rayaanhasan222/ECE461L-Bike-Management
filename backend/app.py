@@ -77,7 +77,41 @@ def database():
     user_collection = db['profile-information']
     users = user_collection.find({}, {'_id': 0, 'username': 1})
     user_list = [user['username'] for user in users]
+    print(user_list)  # Log the user list 
     return jsonify(user_list)
+
+
+@app.route('/checkin/<projectId>', methods=['POST'])
+def checkIn_hardware(projectId):
+    qty = request.args.get('qty', type=int)
+    return jsonify({
+        "projectId": projectId,
+        "quantity": qty,
+        "message": f"{qty} hardware checked in for project {projectId}"
+    })
+
+@app.route('/checkout/<projectId>', methods=['POST'])
+def checkOut_hardware(projectId):
+    qty = request.args.get('qty', type=int)
+    return jsonify({
+        "projectId": projectId,
+        "quantity": qty,
+        "message": f"{qty} hardware checked out for project {projectId}"
+    })
+
+@app.route('/join/<projectId>', methods=['POST'])
+def joinProject(projectId):
+    return jsonify({
+        "projectId": projectId,
+        "message": f"Joined project {projectId}"
+    })
+
+@app.route('/leave/<projectId>', methods=['POST'])
+def leaveProject(projectId):
+    return jsonify({
+        "projectId": projectId,
+        "message": f"Left project {projectId}"
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
