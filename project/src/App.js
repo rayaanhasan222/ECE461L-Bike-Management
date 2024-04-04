@@ -3,8 +3,8 @@ import './App.css';
 
 import {useState} from "react"
 
-exports.Usernames = new Array("John", "Bob");
-exports.Passwords = new Array("password", "hi");
+// exports.Usernames = new Array("John", "Bob");
+// exports.Passwords = new Array("password", "hi");
 
 
 
