@@ -1,96 +1,110 @@
 // Import necessary modules and components
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import ProjectList from './Components/ProjectList';
 import './App.css';
 
-// Define the EnterQty component
-function EnterQty(props) {
-  return <TextField label={props.input} variant="filled" size='small' className='text' />;
-}
-
-// Define the Enter component
-function Enter(props) {
-  const [buttonText, setButtonText] = useState('Sign Up ');
-
-  function clickButton(e) {
-    e.preventDefault();
-    setButtonText(buttonText === 'Join ' ? 'Leave ' : 'Join ');
-  }
-
-  return <Button variant="contained" onClick={clickButton}>{buttonText}{props.pname}</Button>;
-}
 
 // Define the NavBar component
-function NavBar() {
+function NavBar({ username }) {
   return (
     <nav>
       <Link to="/home">Homepage</Link> | 
       <Link to="/login">Login</Link> | 
       <Link to="/signup">Sign Up</Link> |
-      <Link to="/database">Database</Link> |
       <Link to="/ProjectList">Project List</Link> |
+      <div style={{ float: 'right' }}>
+        {username}
+      </div>
     </nav>
   );
 }
 
 // Define the HomePage component
-function HomePage() {
-  return <div><h1>Homepage</h1></div>;
-}
+function HomePage({logout}) {
 
-// Define the LoginPage component
-function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const loggedInUser = localStorage.getItem('user') || 'guest';
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-      e.preventDefault();
-      const url = "http://127.0.0.1:5000/login" 
-      const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-      });
-      const data = await response.json();
-      alert(data.message);
-      // Redirect to login or home page on successful sign-up
+  const handleLogout = () => {
+    logout();
+    navigate('/login'); // Redirect to login page on logout
   };
 
   return (
-      <div>
-          <h1>Login</h1>
-          <form onSubmit={handleLogin}>
-              <TextField
-                  label="Username"
-                  variant="filled"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  size="small"
-                  className="text"
-              />
-              <TextField
-                  label="Password"
-                  type="password"
-                  variant="filled"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  size="small"
-                  className="text"
-              />
-              <Button type="submit" variant="contained">Login</Button>
-          </form>
-      </div>
+    <div>
+      <h1>Welcome {loggedInUser}</h1>
+      {loggedInUser && loggedInUser !== 'guest' && <Button onClick={handleLogout} variant="contained">Logout</Button>}
+    </div>
   );
 }
+
+// Define the LoginPage component
+function LoginPage({ onLoginSuccess }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        onLoginSuccess(username);
+        alert(data.message);
+        navigate('/home'); // Redirect to home page on successful login
+      } else {
+        alert(data.message);
+        setUsername(username); // Update the username in the state
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred during login.');
+    }
+  };
+
+  return (
+    <div>
+      <h1>Login</h1>
+      <form onSubmit={handleLogin}>
+        <TextField
+          label="Username"
+          variant="filled"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          size="small"
+          className="text"
+        />
+        <TextField
+          label="Password"
+          type="password"
+          variant="filled"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          size="small"
+          className="text"
+        />
+        <Button type="submit" variant="contained">Login</Button>
+      </form>
+    </div>
+  );
+}
+
 
 function SignUpPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignUp = async (e) => {
+    try {
       e.preventDefault();
       const url = "http://127.0.0.1:5000/signup" 
       const response = await fetch(url, {
@@ -101,6 +115,10 @@ function SignUpPage() {
       const data = await response.json();
       alert(data.message);
       // Redirect to login or home page on successful sign-up
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred during sign-up.');
+    }
   };
 
   return (
@@ -130,44 +148,38 @@ function SignUpPage() {
   );
 }
 
-
-function DatabasePage() {
-  const [usernames, setUsernames] = useState([]);
-
-  useEffect(() => {
-      fetch('/database')
-          .then(response => response.json())
-          .then(data => setUsernames(data))
-          .catch(error => console.error('Error fetching data:', error));
-  }, []);  // The empty array ensures this effect runs only once after the component mounts
-
-  return (
-      <div>
-          <h1>User Database</h1>
-          <ul>
-              {usernames.map((username, index) => (
-                  <li key={index}>{username}</li>
-              ))}
-          </ul>
-      </div>
-  );
-}
-
-
-
-
 // Define the App component with React Router for routing
 function App() {
+
+  const [username, setUsername] = useState('guest');
+
+  useEffect(() => {
+    // Check local storage for user info
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUsername(storedUser);
+    }
+  }, []);
+
+  const handleLoginSuccess = (username) => {
+    localStorage.setItem('user', username);
+    setUsername(username);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('user');
+    setUsername('guest'); // Update the username state to 'guest'
+  };
+
   return (
       <Router>
-          <NavBar />
+          <NavBar username={username} />
           <Routes>
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess}/>} />
               <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/database" element={<DatabasePage />} />
-              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage logout={logout}/>} />
               <Route path="/ProjectList" element={<ProjectList />} />
+              <Route path="/" element={<HomePage logout={logout} />} />
           </Routes>
       </Router>
   );
