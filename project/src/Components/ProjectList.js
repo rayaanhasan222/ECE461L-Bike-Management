@@ -1,11 +1,16 @@
 import React from 'react';
 import Project from './Project';
+import { useState } from 'react';
 import './Project.css'; // Import the CSS file
 
 
-  
+
 const ProjectList = () => {
   const [projects, setProjects] = React.useState([]);
+  const [enterProjectName, setEnterProjectName] = useState('');
+  const [enterProjectID, setEnterProjectID] = useState(''); 
+  const [enterProjectDescription, setEnterProjectDescription] = useState('');
+  const [joinProjectId, setJoinProjectId] = React.useState('');
 
   React.useEffect(() => {
     const fetchProjects = async () => {
@@ -25,7 +30,7 @@ const ProjectList = () => {
     fetchProjects();
   }, []);
 
-  const [joinProjectId, setJoinProjectId] = React.useState('');
+  
 
   const handleJoinProject = async (e) => {
     e.preventDefault();
@@ -50,6 +55,27 @@ const ProjectList = () => {
     }
   };
 
+  const handleCreateProject = async (e) => {
+    e.preventDefault();
+    // Send a request to the backend to create a project with project details
+    const url = "http://127.0.0.1:5000/create" 
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enterProjectName, enterProjectID, enterProjectDescription })
+    });
+    const data = await response.json();
+
+    // Display the response message
+    alert(data.message);
+
+
+    setEnterProjectName('');
+    setEnterProjectID('');
+    setEnterProjectDescription('');
+    
+  };
+
   return (
     <div className="projectlist">
       <form>
@@ -57,10 +83,10 @@ const ProjectList = () => {
         <button type="submit" onClick={handleJoinProject}>Join</button>
       </form>
       <form>
-        <input type="text" placeholder="Enter Project Name" />
-        <input type="text" placeholder="Enter Project ID" />
-        <input type="text" placeholder="Enter Project Description" />
-        <button type="submit">Create</button>
+        <input type="text" placeholder="Enter Project Name" value={enterProjectName} onChange={(e) => setEnterProjectName(e.target.value)}/>
+        <input type="text" placeholder="Enter Project ID" value={enterProjectID} onChange={(e) => setEnterProjectID(e.target.value)}/>
+        <input type="text" placeholder="Enter Project Description" value={enterProjectDescription} onChange={(e) => setEnterProjectDescription(e.target.value)}/>
+        <button type="submit" onClick ={handleCreateProject}>Create</button>
       </form>
       {projects.map((project, index) => (
         <Project key={index} projectId={`${index + 1}`} name={project.name} users={project.users} />

@@ -120,6 +120,33 @@ def signup():
         col.insert_one({"password": hashed_password})
         return jsonify({"message": "User registered successfully"}), 201
 
+@app.route('/create', methods=['POST'])
+def createProject():
+    data = request.get_json()
+    formProjectName = data.get('enterProjectName')
+    formProjectID = data.get('enterProjectID')
+    formProjectDescription = data.get('enterProjectDescription')
+
+    if not formProjectName or not formProjectID or not formProjectDescription:
+        return jsonify({"message": "Project name, ID, and description required"}), 400
+    else:
+        # Check if the projectID already exists
+        projectsDB = client.get_database("Projects")
+        collectionNames = projectsDB.list_collection_names()
+        if formProjectID in collectionNames:
+            return jsonify({"message": "Project ID already exists"}), 400
+        else:
+            # Create a new collection for the projectID
+            collection = projectsDB[formProjectID]
+            collection.insert_one({
+                "HWSet1Available": 100,
+                "HWSet2Available": 100,
+                "projectName": formProjectName,
+                "projectDescription": formProjectDescription
+            })
+            return jsonify({"message": "Project created successfully"}), 201
+
+
 
 @app.route('/checkin/<projectId>', methods=['POST'])
 def checkIn_hardware(projectId):
@@ -153,6 +180,9 @@ def leaveProject(projectId):
         "message": f"Left project {projectId}"
     })
 
+
+
+
 @app.route('/projectsJoined', methods=['GET'])
 def projectsJoined():
     username = request.args.get('userName')
@@ -170,6 +200,14 @@ def projectsJoined():
             project_ids.append(collection_name)
 
     return jsonify({"projectIDs": project_ids}), 200
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
