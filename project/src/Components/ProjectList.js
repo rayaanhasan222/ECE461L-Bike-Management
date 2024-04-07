@@ -10,7 +10,7 @@ const ProjectList = () => {
   React.useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/projectsJoined?userName=YOUR_USERNAME');
+        const response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${YOUR_USERNAME}`);
         if (response.ok) {
           const data = await response.json();
           setProjects(data.projectIDs);

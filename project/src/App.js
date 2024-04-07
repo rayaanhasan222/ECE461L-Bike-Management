@@ -1,26 +1,14 @@
 // Import necessary modules and components
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import ProjectList from './Components/ProjectList';
 import './App.css';
 
-// Define the EnterQty component
-function EnterQty(props) {
-  return <TextField label={props.input} variant="filled" size='small' className='text' />;
-}
 
-// Define the Enter component
-function Enter(props) {
-  const [buttonText, setButtonText] = useState('Sign Up ');
-
-  function clickButton(e) {
-    e.preventDefault();
-    setButtonText(buttonText === 'Join ' ? 'Leave ' : 'Join ');
-  }
-
-  return <Button variant="contained" onClick={clickButton}>{buttonText}{props.pname}</Button>;
+async function loginUser(credentials) {
+  return { username: credentials.username, message: 'Login successful' };
 }
 
 // Define the NavBar component
@@ -38,25 +26,26 @@ function NavBar() {
 
 // Define the HomePage component
 function HomePage() {
-  return <div><h1>Homepage</h1></div>;
+  const loggedInUser = localStorage.getItem('user');
+  return (
+    <div>
+      <h1>Welcome {loggedInUser}</h1>
+    </div>
+  );
 }
 
 // Define the LoginPage component
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
       e.preventDefault();
-      const url = "http://127.0.0.1:5000/login" 
-      const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-      });
-      const data = await response.json();
+      const data = await loginUser({ username, password });
+      localStorage.setItem('user', username); // Store username in local storage
       alert(data.message);
-      // Redirect to login or home page on successful sign-up
+      navigate('/home'); // Redirect to home page on successful login
   };
 
   return (
@@ -85,6 +74,7 @@ function LoginPage() {
       </div>
   );
 }
+
 
 function SignUpPage() {
   const [username, setUsername] = useState('');
@@ -130,32 +120,6 @@ function SignUpPage() {
   );
 }
 
-
-function DatabasePage() {
-  const [usernames, setUsernames] = useState([]);
-
-  useEffect(() => {
-      fetch('/database')
-          .then(response => response.json())
-          .then(data => setUsernames(data))
-          .catch(error => console.error('Error fetching data:', error));
-  }, []);  // The empty array ensures this effect runs only once after the component mounts
-
-  return (
-      <div>
-          <h1>User Database</h1>
-          <ul>
-              {usernames.map((username, index) => (
-                  <li key={index}>{username}</li>
-              ))}
-          </ul>
-      </div>
-  );
-}
-
-
-
-
 // Define the App component with React Router for routing
 function App() {
   return (
@@ -165,7 +129,6 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/home" element={<HomePage />} />
-              <Route path="/database" element={<DatabasePage />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/ProjectList" element={<ProjectList />} />
           </Routes>
