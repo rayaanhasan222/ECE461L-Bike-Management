@@ -83,9 +83,9 @@ def login():
     if not form_username or not form_password:
         return jsonify({"message": "Username and password required"}), 400
 
-    dbNames = client['Users'].list_collection_names()
+    colNames = client['Users'].list_collection_names()
     # Check if the username exists in the database
-    if form_username in dbNames:
+    if form_username in colNames:
         # Check if the password is correct
         col = client['Users'][form_username]
         pwd = col.find_one('password')['password']
@@ -111,8 +111,8 @@ def signup():
 
     # Check if database with the same username already exists
     
-    dbNames = client['Users'].list_collection_names()
-    if form_username in dbNames:
+    colNames = client['Users'].list_collection_names()
+    if form_username in colNames:
         return jsonify({"message": "User already exists"}), 400
     else: 
         col = client['Users'][form_username]  # Create a new collection with the username
