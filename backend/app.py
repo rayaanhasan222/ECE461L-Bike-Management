@@ -136,14 +136,46 @@ def createProject():
             return jsonify({"message": "Project ID already exists"}), 400
         else:
             # Create a new collection for the projectID
-            collection = projectsDB[formProjectID]
-            collection.insert_one({
+            projectCollection = projectsDB[formProjectID]
+            projectCollection.insert_one({
                 "HWSet1Available": 100,
                 "HWSet2Available": 100,
                 "projectName": formProjectName,
                 "projectDescription": formProjectDescription
             })
             return jsonify({"message": "Project created successfully"}), 201
+        
+@app.route('/join', methods=['POST'])
+def joinProject(projectId):
+    data = request.get_json()
+    formProjectID = data.get('joinProjectId')
+    formUserID = data.get('UserId')
+
+    if not formProjectID or not formUserID:
+        return jsonify({"message": "Project ID and User ID required"}), 400
+    
+    else: 
+        # Check if the projectID exists
+        projectsDB = client.get_database("Projects")
+        collectionNames = projectsDB.list_collection_names()
+        if formProjectID not in collectionNames:
+            return jsonify({"message": "Project ID does not exist"}), 400
+        else:
+            # Check if the user already exists in the project
+            projectCollection = projectsDB[formProjectID]
+            if projectCollection.count_documents({"users": formUserID}) > 0:
+                return jsonify({"message": "User already in project"}), 400
+            else:
+                projectCollection.update_one({"users": formUserID})
+                return jsonify({"message": "User joined project successfully"}), 201
+
+
+
+
+    return jsonify({
+        "projectId": projectId,
+        "message": f"Joined project {projectId}"
+    })
 
 
 
@@ -187,12 +219,6 @@ def checkOut_hardware(projectId):
         "message": f"{qty} hardware checked out for {hwSet} in project {name}"
     })
 
-@app.route('/join/<projectId>', methods=['POST'])
-def joinProject(projectId):
-    return jsonify({
-        "projectId": projectId,
-        "message": f"Joined project {projectId}"
-    })
 
 @app.route('/leave/<projectId>', methods=['POST'])
 def leaveProject(projectId):
