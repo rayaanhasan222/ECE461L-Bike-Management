@@ -82,7 +82,7 @@ def login():
     if not form_username or not form_password:
         return jsonify({"message": "Username and password required"}), 400
 
-    dbNames = client.list_database_names()
+    dbNames = client['Users'].list_collection_names()
     # Check if the username exists in the database
     if form_username in dbNames:
         # Check if the password is correct
