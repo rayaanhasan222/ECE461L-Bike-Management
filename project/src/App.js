@@ -43,15 +43,46 @@ function HomePage() {
 
 // Define the LoginPage component
 function LoginPage() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e) => {
+      e.preventDefault();
+      const url = "http://127.0.0.1:5000/login" 
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      alert(data.message);
+      // Redirect to login or home page on successful sign-up
+  };
+
   return (
-    <div className="Login">
-      <h1>Returning User Login</h1>
-      <div className="inputBox">
-        <EnterQty input='Username' />
-        <EnterQty input='Password' />
-        <Enter pname='' />
+      <div>
+          <h1>Login</h1>
+          <form onSubmit={handleLogin}>
+              <TextField
+                  label="Username"
+                  variant="filled"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  size="small"
+                  className="text"
+              />
+              <TextField
+                  label="Password"
+                  type="password"
+                  variant="filled"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  size="small"
+                  className="text"
+              />
+              <Button type="submit" variant="contained">Login</Button>
+          </form>
       </div>
-    </div>
   );
 }
 
@@ -61,13 +92,14 @@ function SignUpPage() {
 
   const handleSignUp = async (e) => {
       e.preventDefault();
-      const response = await fetch('/signup', {
+      const url = "http://127.0.0.1:5000/signup" 
+      const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
       });
       const data = await response.json();
-      console.log(data);
+      alert(data.message);
       // Redirect to login or home page on successful sign-up
   };
 

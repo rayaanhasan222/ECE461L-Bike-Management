@@ -12,6 +12,15 @@ const ProjectList = () => {
 
   return (
     <div className="projectlist">
+      <form>
+        <input type="text" placeholder="Enter Project ID" />
+      </form>
+      <form>
+        <input type="text" placeholder="Enter Project Name" />
+        <input type="text" placeholder="Enter Project ID" />
+        <input type="text" placeholder="Enter Project Description" />
+        <button type="submit">Create</button>
+      </form>
       {projects.map((project, index) => (
         <Project key={index} projectId={`${index + 1}`} name={project.name} users={project.users} />
       ))}
