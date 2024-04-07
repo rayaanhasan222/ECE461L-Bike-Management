@@ -7,9 +7,9 @@ import HWSet from './HWSet';
 const Project = ({ projectId, name, users }) => {
 
   
-  const handleCheckIn = async (projectId, qty) => {
+  const handleCheckIn = async (projectId, qty, userid, hwset) => {
     try {
-      const response = await fetch(`http://localhost:5000/checkin/${projectId}?qty=${qty}`, { method: 'POST' });
+      const response = await fetch(`http://localhost:5000/checkin/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
       const data = await response.json();
       alert(data.message); // Show the message in a popup
     } catch (error) {
@@ -20,7 +20,7 @@ const Project = ({ projectId, name, users }) => {
   
   const handleCheckOut = async (projectId, qty) => {
     try {
-      const response = await fetch(`http://localhost:5000/checkout/${projectId}?qty=${qty}`, { method: 'POST' });
+      const response = await fetch(`http://localhost:5000/checkout/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
       const data = await response.json();
       alert(data.message); // Show the message in a popup
     } catch (error) {
