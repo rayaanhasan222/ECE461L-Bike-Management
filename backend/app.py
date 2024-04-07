@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from pymongo.mongo_client import MongoClient
 from flask_cors import CORS
-import os
 from dotenv import load_dotenv
 
 

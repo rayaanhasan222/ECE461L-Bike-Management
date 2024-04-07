@@ -7,29 +7,36 @@ import ProjectList from './Components/ProjectList';
 import './App.css';
 
 
-async function loginUser(credentials) {
-  return { username: credentials.username, message: 'Login successful' };
-}
-
 // Define the NavBar component
-function NavBar() {
+function NavBar({ username }) {
   return (
     <nav>
       <Link to="/home">Homepage</Link> | 
       <Link to="/login">Login</Link> | 
       <Link to="/signup">Sign Up</Link> |
-      <Link to="/database">Database</Link> |
       <Link to="/ProjectList">Project List</Link> |
+      <div style={{ float: 'right' }}>
+        {username}
+      </div>
     </nav>
   );
 }
 
 // Define the HomePage component
 function HomePage() {
+
   const loggedInUser = localStorage.getItem('user');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login'); // Redirect to login page on logout
+  };
+
   return (
     <div>
       <h1>Welcome {loggedInUser}</h1>
+      {loggedInUser && loggedInUser !== 'guest' && <Button onClick={handleLogout} variant="contained">Logout</Button>}
     </div>
   );
 }
@@ -41,37 +48,52 @@ function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-      e.preventDefault();
-      const data = await loginUser({ username, password });
-      localStorage.setItem('user', username); // Store username in local storage
-      alert(data.message);
-      navigate('/home'); // Redirect to home page on successful login
+    e.preventDefault();
+    try {
+      const response = await fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem('user', username); // Store username in local storage
+        alert(data.message);
+        navigate('/home'); // Redirect to home page on successful login
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred during login.');
+    }
   };
 
   return (
-      <div>
-          <h1>Login</h1>
-          <form onSubmit={handleLogin}>
-              <TextField
-                  label="Username"
-                  variant="filled"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  size="small"
-                  className="text"
-              />
-              <TextField
-                  label="Password"
-                  type="password"
-                  variant="filled"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  size="small"
-                  className="text"
-              />
-              <Button type="submit" variant="contained">Login</Button>
-          </form>
-      </div>
+    <div>
+      <h1>Login</h1>
+      <form onSubmit={handleLogin}>
+        <TextField
+          label="Username"
+          variant="filled"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          size="small"
+          className="text"
+        />
+        <TextField
+          label="Password"
+          type="password"
+          variant="filled"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          size="small"
+          className="text"
+        />
+        <Button type="submit" variant="contained">Login</Button>
+      </form>
+    </div>
   );
 }
 
@@ -81,6 +103,7 @@ function SignUpPage() {
   const [password, setPassword] = useState('');
 
   const handleSignUp = async (e) => {
+    try {
       e.preventDefault();
       const url = "http://127.0.0.1:5000/signup" 
       const response = await fetch(url, {
@@ -91,6 +114,10 @@ function SignUpPage() {
       const data = await response.json();
       alert(data.message);
       // Redirect to login or home page on successful sign-up
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred during sign-up.');
+    }
   };
 
   return (
@@ -122,9 +149,20 @@ function SignUpPage() {
 
 // Define the App component with React Router for routing
 function App() {
+
+  const [username, setUsername] = useState('guest');
+
+  useEffect(() => {
+    // Check local storage for user info
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUsername(storedUser);
+    }
+  }, []);
+
   return (
       <Router>
-          <NavBar />
+          <NavBar username={username} />
           <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
