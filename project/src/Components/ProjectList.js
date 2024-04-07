@@ -12,6 +12,7 @@ const ProjectList = () => {
   const [enterProjectDescription, setEnterProjectDescription] = useState('');
   const [joinProjectId, setJoinProjectId] = React.useState('');
 
+  const YOUR_USERNAME = 'YOUR_USERNAME'; // Replace YOUR_USERNAME with your username
   React.useEffect(() => {
     const fetchProjects = async () => {
       try {

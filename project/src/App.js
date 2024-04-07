@@ -23,13 +23,13 @@ function NavBar({ username }) {
 }
 
 // Define the HomePage component
-function HomePage() {
+function HomePage({logout}) {
 
-  const loggedInUser = localStorage.getItem('user');
+  const loggedInUser = localStorage.getItem('user') || 'guest';
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    logout();
     navigate('/login'); // Redirect to login page on logout
   };
 
@@ -42,7 +42,7 @@ function HomePage() {
 }
 
 // Define the LoginPage component
-function LoginPage() {
+function LoginPage({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -58,11 +58,12 @@ function LoginPage() {
 
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('user', username); // Store username in local storage
+        onLoginSuccess(username);
         alert(data.message);
         navigate('/home'); // Redirect to home page on successful login
       } else {
         alert(data.message);
+        setUsername(username); // Update the username in the state
       }
     } catch (error) {
       console.error(error);
@@ -160,15 +161,25 @@ function App() {
     }
   }, []);
 
+  const handleLoginSuccess = (username) => {
+    localStorage.setItem('user', username);
+    setUsername(username);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('user');
+    setUsername('guest'); // Update the username state to 'guest'
+  };
+
   return (
       <Router>
           <NavBar username={username} />
           <Routes>
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess}/>} />
               <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/" element={<HomePage />} />
+              <Route path="/home" element={<HomePage logout={logout}/>} />
               <Route path="/ProjectList" element={<ProjectList />} />
+              <Route path="/" element={<HomePage logout={logout} />} />
           </Routes>
       </Router>
   );

@@ -82,14 +82,17 @@ def login():
     if not form_username or not form_password:
         return jsonify({"message": "Username and password required"}), 400
 
-    dbNames = client['Users'].list_collection_names()
+    db = client['Users']
+    user_collection = db[form_username] # get the collection
+
+    user_data = user_collection.find_one({"password" : {"$exists": True}}) # get the document
     # Check if the username exists in the database
-    if form_username in dbNames:
+
+    if user_data:
         # Check if the password is correct
-        col = client['Users'][form_username]
-        pwd = col.find_one('password')['password']
-        if decrypt(pwd, 1, 1) == (form_password):
-            return jsonify({"message": "Login succesful"}), 400
+        stored_password_encrypted = user_data.get('password')
+        if decrypt(stored_password_encrypted, 1, 1) == (form_password):
+            return jsonify({"message": "Login succesful"}), 200
         else:
             return jsonify({"message": "Wrong Password"}), 400
     else:
