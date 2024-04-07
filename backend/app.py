@@ -87,9 +87,9 @@ def login():
     # Check if the username exists in the database
     if form_username in dbNames:
         # Check if the password is correct
-        db = client[form_username]
-        info = db['Info']
-        if decrypt(info.find_one()['password'], 1, 1) == (form_password):
+        col = client['Users'][form_username]
+        pwd = col.find_one('password')['password']
+        if decrypt(pwd, 1, 1) == (form_password):
             return jsonify({"message": "Login succesful"}), 400
         else:
             return jsonify({"message": "Wrong Password"}), 400
@@ -111,12 +111,11 @@ def signup():
 
     # Check if database with the same username already exists
     
-    dbNames = client.list_database_names()
+    dbNames = client['Users'].list_collection_names()
     if form_username in dbNames:
         return jsonify({"message": "User already exists"}), 400
     else: 
-        db = client[form_username]  # Create a new database with the username
-        col = db['Info']
+        col = client['Users'][form_username]  # Create a new collection with the username
         col.insert_one({"password": hashed_password})
         return jsonify({"message": "User registered successfully"}), 201
 
@@ -151,19 +150,39 @@ def createProject():
 @app.route('/checkin/<projectId>', methods=['POST'])
 def checkIn_hardware(projectId):
     qty = request.args.get('qty', type=int)
+    userid = request.args.get('userid', type=str)
+    hwSet = request.args.get('hwSet', type=str)
+    userAmt = client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut']
+    if(qty>userAmt):
+        return jsonify({
+        "message": f"Error: You only have {userAmt} quantity"
+    })
+
+    client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut'] = client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut']-qty
+    client["Projects"][projectId].find_one()[hwSet + 'Available'] = client["Projects"][projectId].find_one()[hwSet + 'Available']+qty
     return jsonify({
         "projectId": projectId,
         "quantity": qty,
-        "message": f"{qty} hardware checked in for project {projectId}"
+        "message": f"{qty} hardware checked in for {hwSet} in project {client["Projects"][projectId].find_one()['projectName']}"
     })
 
 @app.route('/checkout/<projectId>', methods=['POST'])
 def checkOut_hardware(projectId):
     qty = request.args.get('qty', type=int)
+    userid = request.args.get('userid', type=str)
+    hwSet = request.args.get('hwSet', type=str)
+    availability = client['Projects'][projectId].find_one()[hwSet + 'Available']
+    if(qty>availability):
+        return jsonify({
+        "message": f"Error: Only {availability} available for checkout"
+    })
+
+    client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut'] = client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut']+qty
+    client["Projects"][projectId].find_one()[hwSet + 'Available'] = client["Projects"][projectId].find_one()[hwSet + 'Available']-qty
     return jsonify({
         "projectId": projectId,
         "quantity": qty,
-        "message": f"{qty} hardware checked out for project {projectId}"
+        "message": f"{qty} hardware checked out for {hwSet} in project {client["Projects"][projectId].find_one()['projectName']}"
     })
 
 @app.route('/join/<projectId>', methods=['POST'])
