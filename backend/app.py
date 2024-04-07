@@ -1,18 +1,14 @@
 from flask import Flask, request, jsonify
 from pymongo.mongo_client import MongoClient
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash
 import os
 from dotenv import load_dotenv
-from werkzeug.security import check_password_hash
 
 
 # Load environment variables
 load_dotenv()
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all domains
-
-
 
 
 # 1 Opens a connection to the Cluster
@@ -27,36 +23,7 @@ try:
 except Exception as e:
   print(e)
 
-# Dummy code
-"""
-MongoDB connection setup
-password = os.environ.get("MONGO_PWD")
-username = "jfang875" # Replace with your MongoDB username
-database_name = "Users" # Replace with your database name
-cluster_url = "ece461l.z5hssf5.mongodb.net"
-
-connection_string = f"mongodb+srv://{username}:{password}@{cluster_url}/{database_name}?retryWrites=true&w=majority"
-connection_string = f"mongodb+srv://jfang875:eIMG6XdAH0e1chGD@ece461l.z5hssf5.mongodb.net/Users?retryWrites=true&w=majority&w=majority"
-
-
-app.config["MONGO_URI"] = connection_string
-try:
-    db = mongo.db
-    dummy_username = "Jim"
-    dummy_password = "1234"
-    dummy_hashed_password = generate_password_hash(dummy_password)
-    dummy_user = {
-        "username": dummy_username,
-        "password": dummy_hashed_password
-    }
-    db["profile-information"].insert_one(dummy_user)
-except Exception as e:
-    print(f"Error connecting to MongoDB: {e}")
-"""
-
-
-
-
+#encrypt and decrpt functions
 def encrypt(text, n, direction):
     if direction != -1 and direction != 1:
         print(direction)
@@ -185,6 +152,24 @@ def leaveProject(projectId):
         "projectId": projectId,
         "message": f"Left project {projectId}"
     })
+
+@app.route('/projectsJoined', methods=['GET'])
+def projectsJoined():
+    username = request.args.get('userName')
+    project_ids = []
+
+    # Query the "AllProjects" database
+    db = client["AllProjects"]
+
+    # Iterate over each project collection
+    for collection_name in db.list_collection_names():
+        collection = db[collection_name]
+        
+        # Check if the username is in the array of users for the project
+        if collection.count_documents({"users": username}) > 0:
+            project_ids.append(collection_name)
+
+    return jsonify({"projectIDs": project_ids}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
