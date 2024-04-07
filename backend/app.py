@@ -154,28 +154,27 @@ def joinProject(projectId):
     if not formProjectID or not formUserID:
         return jsonify({"message": "Project ID and User ID required"}), 400
     
-    else: 
-        # Check if the projectID exists
-        projectsDB = client.get_database("Projects")
-        collectionNames = projectsDB.list_collection_names()
-        if formProjectID not in collectionNames:
-            return jsonify({"message": "Project ID does not exist"}), 400
-        else:
-            # Check if the user already exists in the project
-            projectCollection = projectsDB[formProjectID]
-            if projectCollection.count_documents({"users": formUserID}) > 0:
-                return jsonify({"message": "User already in project"}), 400
-            else:
-                projectCollection.update_one({"users": formUserID})
-                return jsonify({"message": "User joined project successfully"}), 201
-
-
-
-
-    return jsonify({
-        "projectId": projectId,
-        "message": f"Joined project {projectId}"
+    
+    # Check if the projectID exists in Projects Database
+    projectsDB = client.get_database("Projects")
+    projectCollectionList = projectsDB.list_collection_names()
+    if formProjectID not in projectCollectionList:
+        return jsonify({"message": "Project ID does not exist"}), 400
+    
+    # Check if the user is already in the project
+    usersDB = client.get_database("Users")
+    userCollection = usersDB[formUserID]
+    if userCollection.count_documents({"projectID": formProjectID}) > 0:
+        return jsonify({"message": "User already in project"}), 400
+    
+    # If not in the project, add project to user
+    userCollection.insert_one({
+        "projectID": formProjectID,
+        "HWSet1CheckedOut": 0,
+        "HWSet2CheckedOut": 0,
     })
+
+    return jsonify({"message": "User joined project successfully"}), 201
 
 
 
