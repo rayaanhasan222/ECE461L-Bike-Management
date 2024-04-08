@@ -1,6 +1,6 @@
 import React from 'react';
 import Project from './Project';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Project.css'; // Import the CSS file
 
 
@@ -12,11 +12,18 @@ const ProjectList = () => {
   const [enterProjectDescription, setEnterProjectDescription] = useState('');
   const [joinProjectId, setJoinProjectId] = React.useState('');
 
-  const YOUR_USERNAME = 'YOUR_USERNAME'; // Replace YOUR_USERNAME with your username
-  React.useEffect(() => {
+  const currentUsername = localStorage.getItem('user') || 'guest';
+  
+  useEffect(() => {
     const fetchProjects = async () => {
+
+      if(currentUsername == 'guest'){
+        console.log('No user logged in')
+        return;
+      }
+
       try {
-        const response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${YOUR_USERNAME}`);
+        const response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${currentUsername}`);
         if (response.ok) {
           const data = await response.json();
           setProjects(data.projectIDs);
@@ -79,6 +86,7 @@ const ProjectList = () => {
 
   return (
     <div className="projectlist">
+      
       <form>
         <input type="text" placeholder="Enter Project ID" value={joinProjectId} onChange={(e) => setJoinProjectId(e.target.value)} />
         <button type="submit" onClick={handleJoinProject}>Join</button>
@@ -90,7 +98,12 @@ const ProjectList = () => {
         <button type="submit" onClick ={handleCreateProject}>Create</button>
       </form>
       {projects.map((project, index) => (
-        <Project key={index} projectId={`${index + 1}`} name={project.name} users={project.users} />
+        //Each project component intakes projectID, project name, and users
+        <Project 
+          key={index} 
+          projectId={project.projectID} 
+          name={project.projectName} 
+          description={project.projectDescription} />
       ))}
     </div>
   );

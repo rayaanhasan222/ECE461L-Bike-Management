@@ -138,15 +138,14 @@ def createProject():
             return jsonify({"message": "Project ID already exists"}), 400
         else:
             # Create a new collection for the projectID
-            collection = projectsDB[formProjectID]
-            collection.insert_one({
+            projectCollection = projectsDB[formProjectID]
+            projectCollection.insert_one({
                 "HWSet1Available": 100,
                 "HWSet2Available": 100,
                 "projectName": formProjectName,
                 "projectDescription": formProjectDescription
             })
             return jsonify({"message": "Project created successfully"}), 201
-
 
 
 @app.route('/checkin/<projectId>', methods=['POST'])
@@ -189,12 +188,37 @@ def checkOut_hardware(projectId):
         "message": f"{qty} hardware checked out for {hwSet} in project {name}"
     })
 
-@app.route('/join/<projectId>', methods=['POST'])
-def joinProject(projectId):
-    return jsonify({
-        "projectId": projectId,
-        "message": f"Joined project {projectId}"
+@app.route('/join', methods=['POST'])
+def joinProject():
+    data = request.get_json()
+    formProjectID = data.get('joinProjectId')
+    #formUserID = data.get('UserId')
+    formUserID = "Hirsch"
+
+    if not formProjectID or not formUserID:
+        return jsonify({"message": "Project ID and User ID required"}), 400
+    
+    
+    # Check if the projectID exists in Projects Database
+    projectsDB = client.get_database("Projects")
+    projectCollectionList = projectsDB.list_collection_names()
+    if formProjectID not in projectCollectionList:
+        return jsonify({"message": "Project ID does not exist"}), 400
+    
+    # Check if the user is already in the project
+    usersDB = client.get_database("Users")
+    userCollection = usersDB[formUserID]
+    if userCollection.count_documents({"projectID": formProjectID}) > 0:
+        return jsonify({"message": "User already in project"}), 400
+    
+    # If not in the project, add project to user
+    userCollection.insert_one({
+        "projectID": formProjectID,
+        "HWSet1CheckedOut": 0,
+        "HWSet2CheckedOut": 0,
     })
+
+    return jsonify({"message": "User joined project successfully"}), 201
 
 @app.route('/leave/<projectId>', methods=['POST'])
 def leaveProject(projectId):
@@ -208,21 +232,30 @@ def leaveProject(projectId):
 
 @app.route('/projectsJoined', methods=['GET'])
 def projectsJoined():
-    username = request.args.get('userName')
-    project_ids = []
+    userID = request.args.get('userName')
+    project_details = []
 
-    # Query the "AllProjects" database
-    db = client["AllProjects"]
+    # Query the "Users" database
+    user_db = client["Users"]
+    user_collection = user_db[userID]
+    print("USER ID HERE -------> " + userID)
+    user_docs = user_collection.find({"projectID" : {"$exists" : True}})
 
-    # Iterate over each project collection
-    for collection_name in db.list_collection_names():
-        collection = db[collection_name]
-        
-        # Check if the username is in the array of users for the project
-        if collection.count_documents({"users": username}) > 0:
-            project_ids.append(collection_name)
+    #Iterate through user documents to find project IDs
+    for doc in user_docs:
+        project_id = doc["projectID"]
+        projects_db = client["Projects"]
+        project_collection = projects_db[project_id]
+        project_doc = project_collection.find_one()
 
-    return jsonify({"projectIDs": project_ids}), 200
+        if project_doc:
+            project_details.append({
+                "projectID" : project_id,
+                "projectName" : project_doc.get("projectName"),
+                "projectDescription" : project_doc.get("projectDescription")
+            })
+
+    return jsonify({"projectIDs": project_details}), 200
 
 
 
