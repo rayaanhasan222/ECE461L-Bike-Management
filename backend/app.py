@@ -151,8 +151,8 @@ def createProject():
 def joinProject():
     data = request.get_json()
     formProjectID = data.get('joinProjectId')
-    #formUserID = data.get('UserId')
-    formUserID = "Hirsch"
+    formUserID = data.get('UserId')
+    #formUserID = "Hirsch"
 
     if not formProjectID or not formUserID:
         return jsonify({"message": "Project ID and User ID required"}), 400

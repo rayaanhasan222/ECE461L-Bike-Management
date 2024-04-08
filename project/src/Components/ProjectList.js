@@ -44,25 +44,19 @@ const ProjectList = () => {
 
   const handleJoinProject = async (e) => {
     e.preventDefault();
-    try {
-      // Send a request to the backend to join the project with the given projectId
-      const response = await fetch(`/api/projects/${joinProjectId}`, {
+    const url = "http://127.0.0.1:5000/join" 
+    const response = await fetch(url, {
         method: 'POST',
-        // Add any necessary headers and body to the request
-      });
-      if (response.ok) {
-        // If the request is successful, load the project page with the joined project
-        // You can use React Router or any other method to navigate to the project page
-        alert(`Joined project with ID: ${joinProjectId}`);
-      } else {
-        // Handle the case when the request fails
-        alert('Failed to join project');
-      }
-      // Reset the input field
-      setJoinProjectId('');
-    } catch (error) {
-      alert('An error occurred while joining the project:', error);
-    }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ joinProjectId, "UserId": "Hirsch" })
+    });
+    const data = await response.json();
+
+    // Display the response message
+    alert(data.message);
+
+    // Clear text field
+    setJoinProjectId('');
   };
 
   const handleCreateProject = async (e) => {
