@@ -7,7 +7,8 @@ import HWSet from './HWSet';
 
 
 const Project = ({ projectId, projectName, projectDescription }) => {
-  
+
+  const currentUsername = localStorage.getItem('user') || 'guest';
   const handleCheckIn = async (projectId, qty, userid, hwset) => {
     try {
       const response = await fetch(`http://127.0.0.1:5000/checkin/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
@@ -55,6 +56,7 @@ const Project = ({ projectId, projectName, projectDescription }) => {
           handleCheckIn={handleCheckIn}
           handleCheckOut={handleCheckOut}
           handleLeaveProject={handleLeaveProject}
+          userID = {currentUsername}
           />
         <HWSet
           hwSetName="HWSet2"
@@ -62,6 +64,7 @@ const Project = ({ projectId, projectName, projectDescription }) => {
           handleCheckIn={handleCheckIn}
           handleCheckOut={handleCheckOut}
           handleLeaveProject={handleLeaveProject}
+          userID = {currentUsername}
         />
       </div>
     </div>
