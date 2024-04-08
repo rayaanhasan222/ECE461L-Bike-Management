@@ -185,15 +185,20 @@ def joinProject():
 def checkIn_hardware(projectId):
     qty = request.args.get('qty', type=int)
     userid = request.args.get('userid', type=str)
-    hwSet = request.args.get('hwSet', type=str)
-    userAmt = client['Users'][userid].find_one({"projectID" : projectId})[setName]
+    hwSet = request.args.get('hwset', type=str)
+    userSetName = hwSet + "CheckedOut"
+    projSetName = hwSet + "Available"
+
+
+    userAmt = client['Users'][userid].find_one({"projectID" : projectId})[userSetName]
     if(qty>userAmt):
         return jsonify({
         "message": f"Error: You only have {userAmt} quantity"
     })
-    setName = hwSet + 'CheckedOut'
-    client['Users'][userid].find_one({"projectID" : projectId})[setName] = client['Users'][userid].find_one({"projectID" : projectId})[setName]-qty
-    client["Projects"][projectId].find_one()[setName] = client["Projects"][projectId].find_one()[setName]+qty
+    
+    client['Users'][userid].update_one({"projectID": projectId}, {"$inc": {userSetName: -qty}})
+    client['Projects'][projectId].update_one({}, {"$inc": {projSetName: qty}})
+    
     name = client["Projects"][projectId].find_one()['projectName']
     return jsonify({
         "projectId": projectId,
@@ -205,15 +210,20 @@ def checkIn_hardware(projectId):
 def checkOut_hardware(projectId):
     qty = request.args.get('qty', type=int)
     userid = request.args.get('userid', type=str)
-    hwSet = request.args.get('hwSet', type=str)
-    availability = client['Projects'][projectId].find_one()[setName]
+    hwSet = request.args.get('hwset', type=str)
+
+    userSetName = hwSet + "CheckedOut"
+    projSetName = hwSet + "Available"
+    
+    availability = client['Projects'][projectId].find_one()[projSetName]
+
     if(qty>availability):
         return jsonify({
         "message": f"Error: Only {availability} available for checkout"
     })
-    setName = hwSet + 'CheckedOut'
-    client['Users'][userid].find_one({"projectID" : projectId})[setName] = client['Users'][userid].find_one({"projectID" : projectId})[setName]+qty
-    client["Projects"][projectId].find_one()[setName] = client["Projects"][projectId].find_one()[setName]-qty
+  
+    client['Users'][userid].update_one({"projectID": projectId}, {"$inc": {userSetName: qty}})
+    client['Projects'][projectId].update_one({}, {"$inc": {projSetName: -qty}})
     name = client["Projects"][projectId].find_one()['projectName']
     return jsonify({
         "projectId": projectId,
