@@ -7,8 +7,6 @@ import HWSet from './HWSet';
 const Project = ({ projectId, name, description }) => {
 
   const [userid, setUserid] = useState('exampleUserId');
-  const [hwset1, setHwset1] = useState('HWSet1');
-  const [hwset2, setHwset2] = useState('HWSet2');
   
   const handleCheckIn = async (projectId, qty, userid, hwset) => {
     try {
@@ -54,8 +52,7 @@ const Project = ({ projectId, name, description }) => {
     }
   };
   
-  
-  
+   
 
   return (
     <div className="project-container">
