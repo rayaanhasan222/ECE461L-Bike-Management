@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
 from pymongo.mongo_client import MongoClient
 from flask_cors import CORS
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all domains
 
@@ -234,36 +234,31 @@ def leaveProject(projectId):
 
 @app.route('/projectsJoined', methods=['GET'])
 def projectsJoined():
-    username = request.args.get('userName')
-    project_ids = []
+    userID = request.args.get('userName')
+    project_details = []
 
-    # Query the "AllProjects" database
-    db = client["AllProjects"]
+    # Query the "Users" database
+    user_db = client["Users"]
+    user_collection = user_db[userID]
+    user_docs = user_collection.find({"projectID" : {"$exists" : True}})
 
-    # Iterate over each project collection
-    for collection_name in db.list_collection_names():
-        collection = db[collection_name]
-        
-        # Check if the username is in the array of users for the project
-        if collection.count_documents({"users": username}) > 0:
-            project_ids.append(collection_name)
+    #Iterate through user documents to find project IDs
+    for doc in user_docs:
+        project_id = doc["projectID"]
+        projects_db = client["Projects"]
+        project_collection = projects_db[project_id]
+        project_doc = project_collection.find_one()
 
-    return jsonify({"projectIDs": project_ids}), 200
+        if project_doc:
+            project_details.append({
+                "projectID" : project_id,
+                "projectName" : project_doc.get("projectName"),
+                "projectDescription" : project_doc.get("projectDescription")
+            })
 
-
-
-
-
-
-
+    return jsonify({"projectIDs": project_details}), 200
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
  

@@ -7,9 +7,9 @@ const ProjectDetails = ({name, users}) => {
     <div className="project-details">
       <h3>{name}</h3>
       <ul >
-          {users.map((user, index) => (
+          {/* {users.map((user, index) => (
           <li key={index}>{user}</li>
-          ))}
+          ))} */}
       </ul>
     </div>
   );
