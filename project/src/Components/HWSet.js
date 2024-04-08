@@ -9,6 +9,8 @@ import './Project.css'; // Import the CSS file
 const HWSet = ({ hwSetName, projectId, handleCheckIn, handleCheckOut, handleJoinProject, handleLeaveProject, userID}) => {
   const [quantity, setQuantity] = useState(0);
   const [availability, setAvailability] = useState(0);
+  const [triggerFetch, setTriggerFetch] = useState(false); // state to trigger useEffect
+
 
   useEffect(() => {
     const fetchAvailability = async () => {
@@ -28,11 +30,20 @@ const HWSet = ({ hwSetName, projectId, handleCheckIn, handleCheckOut, handleJoin
     };
 
     fetchAvailability();
-  }, [projectId, hwSetName]);
+  }, [projectId, hwSetName, triggerFetch]);
 
   const handleChange = (event) => {
     setQuantity(event.target.value);
   };
+
+  const performCheckIn = async () => {
+    await handleCheckIn(projectId, parseInt(quantity), userID, hwSetName, () => setTriggerFetch(!triggerFetch));
+  };
+
+const performCheckOut = async () => {
+    await handleCheckOut(projectId, parseInt(quantity), userID, hwSetName, () => setTriggerFetch(!triggerFetch));
+  };
+
 
   return (
     <div className="hw-set">
@@ -48,12 +59,12 @@ const HWSet = ({ hwSetName, projectId, handleCheckIn, handleCheckOut, handleJoin
           value = {quantity}
           onChange = {handleChange}
         />
-      <Button variant="contained" onClick={() => handleCheckIn(projectId, parseInt(quantity), userID, hwSetName)}>
-        Check-in
-      </Button>
-      <Button variant="contained" onClick={() => handleCheckOut(projectId, parseInt(quantity), userID, hwSetName)}>
-        Check-out
-      </Button>
+       <Button variant="contained" onClick={performCheckIn}>
+                Check-in
+        </Button>
+        <Button variant="contained" onClick={performCheckOut}>
+            Check-out
+        </Button>
     </div>
   );
 };
