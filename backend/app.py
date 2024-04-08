@@ -148,10 +148,11 @@ def createProject():
             return jsonify({"message": "Project created successfully"}), 201
         
 @app.route('/join', methods=['POST'])
-def joinProject(projectId):
+def joinProject():
     data = request.get_json()
     formProjectID = data.get('joinProjectId')
-    formUserID = data.get('UserId')
+    #formUserID = data.get('UserId')
+    formUserID = "Hirsch"
 
     if not formProjectID or not formUserID:
         return jsonify({"message": "Project ID and User ID required"}), 400
