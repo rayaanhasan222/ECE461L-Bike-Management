@@ -44,6 +44,7 @@ const ProjectList = () => {
 
   const handleJoinProject = async (e) => {
     e.preventDefault();
+    console.log(currentUsername);
     const url = "http://127.0.0.1:5000/join" 
     const response = await fetch(url, {
         method: 'POST',

@@ -151,7 +151,7 @@ def createProject():
 def joinProject():
     data = request.get_json()
     formProjectID = data.get('joinProjectId')
-    formUserID = data.get('UserId')
+    formUserID = data.get('currentUsername')
     #formUserID = "Hirsch"
 
     if not formProjectID or not formUserID:
