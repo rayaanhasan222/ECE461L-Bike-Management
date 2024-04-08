@@ -48,7 +48,7 @@ const ProjectList = () => {
     const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ joinProjectId, "UserId": "Hirsch" })
+        body: JSON.stringify({ joinProjectId, currentUsername })
     });
     const data = await response.json();
 
