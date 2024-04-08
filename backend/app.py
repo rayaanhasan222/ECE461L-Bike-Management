@@ -191,9 +191,9 @@ def checkIn_hardware(projectId):
         return jsonify({
         "message": f"Error: You only have {userAmt} quantity"
     })
-
-    client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut'] = client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut']-qty
-    client["Projects"][projectId].find_one()[hwSet + 'Available'] = client["Projects"][projectId].find_one()[hwSet + 'Available']+qty
+    setName = hwSet + 'CheckedOut'
+    client['Users'][userid].find_one({"projectID" : projectId})[setName] = client['Users'][userid].find_one({"projectID" : projectId})[setName]-qty
+    client["Projects"][projectId].find_one()[setName] = client["Projects"][projectId].find_one()[setName]+qty
     name = client["Projects"][projectId].find_one()['projectName']
     return jsonify({
         "projectId": projectId,
@@ -206,14 +206,14 @@ def checkOut_hardware(projectId):
     qty = request.args.get('qty', type=int)
     userid = request.args.get('userid', type=str)
     hwSet = request.args.get('hwSet', type=str)
-    availability = client['Projects'][projectId].find_one()[hwSet + 'Available']
+    availability = client['Projects'][projectId].find_one()[setName]
     if(qty>availability):
         return jsonify({
         "message": f"Error: Only {availability} available for checkout"
     })
-
-    client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut'] = client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut']+qty
-    client["Projects"][projectId].find_one()[hwSet + 'Available'] = client["Projects"][projectId].find_one()[hwSet + 'Available']-qty
+    setName = hwSet + 'CheckedOut'
+    client['Users'][userid].find_one({"projectID" : projectId})[setName] = client['Users'][userid].find_one({"projectID" : projectId})[setName]+qty
+    client["Projects"][projectId].find_one()[setName] = client["Projects"][projectId].find_one()[setName]-qty
     name = client["Projects"][projectId].find_one()['projectName']
     return jsonify({
         "projectId": projectId,
