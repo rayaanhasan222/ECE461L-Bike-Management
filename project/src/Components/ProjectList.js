@@ -23,13 +23,9 @@ const ProjectList = () => {
       }
 
       try {
-<<<<<<< HEAD
-        const response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${currentUsername}`);
-=======
         const
         //fetch the list of project IDs the user is part of 
         response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${currentUsername}`);
->>>>>>> main
         if (response.ok) {
           const data = await response.json();
           setProjects(data.projectIDs);
@@ -128,13 +124,8 @@ const ProjectList = () => {
         <Project 
           key={index} 
           projectId={project.projectID} 
-<<<<<<< HEAD
-          name={project.projectName} 
-          description={project.projectDescription} />
-=======
           projectName={project.projectName} 
           projectDescription={project.projectDescription} />
->>>>>>> main
       ))}
     </div>
   );
