@@ -6,7 +6,7 @@ import HWSet from './HWSet';
 
 const Project = ({ projectId, name, users }) => {
 
-  
+  const currentUsername = localStorage.getItem('user') || 'guest';
   const handleCheckIn = async (projectId, qty, userid, hwset) => {
     try {
       const response = await fetch(`http://localhost:5000/checkin/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
@@ -18,7 +18,7 @@ const Project = ({ projectId, name, users }) => {
     }
   };
   
-  const handleCheckOut = async (projectId, qty) => {
+  const handleCheckOut = async (projectId, qty, userid, hwset) => {
     try {
       const response = await fetch(`http://localhost:5000/checkout/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
       const data = await response.json();
@@ -65,6 +65,7 @@ const Project = ({ projectId, name, users }) => {
           handleCheckOut={handleCheckOut}
           handleJoinProject={handleJoinProject}
           handleLeaveProject={handleLeaveProject}
+          userID = {currentUsername}
           />
         <HWSet
           hwSetName="HWSet2"
@@ -73,6 +74,7 @@ const Project = ({ projectId, name, users }) => {
           handleCheckOut={handleCheckOut}
           handleJoinProject={handleJoinProject}
           handleLeaveProject={handleLeaveProject}
+          userID = {currentUsername}
         />
       </div>
     </div>
