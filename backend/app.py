@@ -151,7 +151,7 @@ def createProject():
 def joinProject():
     data = request.get_json()
     formProjectID = data.get('joinProjectId')
-    formUserID = data.get('UserId')
+    formUserID = data.get('currentUsername')
     #formUserID = "Hirsch"
 
     if not formProjectID or not formUserID:
@@ -186,13 +186,13 @@ def checkIn_hardware(projectId):
     qty = request.args.get('qty', type=int)
     userid = request.args.get('userid', type=str)
     hwSet = request.args.get('hwSet', type=str)
-    userAmt = client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut']
+    userAmt = client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut']
     if(qty>userAmt):
         return jsonify({
         "message": f"Error: You only have {userAmt} quantity"
     })
 
-    client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut'] = client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut']-qty
+    client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut'] = client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut']-qty
     client["Projects"][projectId].find_one()[hwSet + 'Available'] = client["Projects"][projectId].find_one()[hwSet + 'Available']+qty
     name = client["Projects"][projectId].find_one()['projectName']
     return jsonify({
@@ -212,7 +212,7 @@ def checkOut_hardware(projectId):
         "message": f"Error: Only {availability} available for checkout"
     })
 
-    client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut'] = client['Users'][userid].find_one(projectId)[hwSet + 'CheckedOut']+qty
+    client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut'] = client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut']+qty
     client["Projects"][projectId].find_one()[hwSet + 'Available'] = client["Projects"][projectId].find_one()[hwSet + 'Available']-qty
     name = client["Projects"][projectId].find_one()['projectName']
     return jsonify({
