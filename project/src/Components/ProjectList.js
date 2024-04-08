@@ -58,6 +58,31 @@ const ProjectList = () => {
 
     // Clear text field
     setJoinProjectId('');
+
+    if(currentUsername == 'guest'){
+      console.log('No user logged in')
+      return;
+    }
+
+    try {
+      const
+      //fetch the list of project IDs the user is part of 
+      response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${currentUsername}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data.projectIDs);
+      } else {
+        alert('Failed to fetch projects');
+      }
+    } catch (error) {
+      alert('An error occurred while fetching projects:', error);
+    }
+
+
+
+
+
+
   };
 
   const handleCreateProject = async (e) => {
