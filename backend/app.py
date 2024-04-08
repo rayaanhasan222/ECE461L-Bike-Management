@@ -186,7 +186,7 @@ def checkIn_hardware(projectId):
     qty = request.args.get('qty', type=int)
     userid = request.args.get('userid', type=str)
     hwSet = request.args.get('hwSet', type=str)
-    userAmt = client['Users'][userid].find_one({"projectID" : projectId})[hwSet + 'CheckedOut']
+    userAmt = client['Users'][userid].find_one({"projectID" : projectId})[setName]
     if(qty>userAmt):
         return jsonify({
         "message": f"Error: You only have {userAmt} quantity"
