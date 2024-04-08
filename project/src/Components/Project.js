@@ -7,13 +7,10 @@ import HWSet from './HWSet';
 
 
 const Project = ({ projectId, projectName, projectDescription }) => {
-
-
-  const [userid, setUserid] = useState('exampleUserId');
   
   const handleCheckIn = async (projectId, qty, userid, hwset) => {
     try {
-      const response = await fetch(`http://localhost:5000/checkin/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
+      const response = await fetch(`http://127.0.0.1:5000/checkin/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
       const data = await response.json();
       alert(data.message); // Show the message in a popup
     } catch (error) {
@@ -24,9 +21,9 @@ const Project = ({ projectId, projectName, projectDescription }) => {
   
 
 
-  const handleCheckOut = async (projectId, qty, userid, hwset) => {main
+  const handleCheckOut = async (projectId, qty, userid, hwset) => {
     try {
-      const response = await fetch(`http://localhost:5000/checkout/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
+      const response = await fetch(`http://127.0.0.1:5000/checkout/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
       const data = await response.json();
       alert(data.message); // Show the message in a popup
     } catch (error) {
@@ -35,20 +32,9 @@ const Project = ({ projectId, projectName, projectDescription }) => {
     }
   };
 
-  const handleJoinProject = async (projectId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/join/${projectId}`, { method: 'POST' });
-      const data = await response.json();
-      alert(data.message); // Show the message in a popup
-    } catch (error) {
-      console.error('Error joining project:', error);
-      // Handle errors
-    }
-  };
-
   const handleLeaveProject = async (projectId) => {
     try {
-      const response = await fetch(`http://localhost:5000/leave/${projectId}`, { method: 'POST' });
+      const response = await fetch(`http://127.0.0.1:5000/leave/${projectId}`, { method: 'POST' });
       const data = await response.json();
       alert(data.message); // Show the message in a popup
     } catch (error) {
@@ -68,7 +54,6 @@ const Project = ({ projectId, projectName, projectDescription }) => {
           projectId = {projectId}
           handleCheckIn={handleCheckIn}
           handleCheckOut={handleCheckOut}
-          handleJoinProject={handleJoinProject}
           handleLeaveProject={handleLeaveProject}
           />
         <HWSet
@@ -76,7 +61,6 @@ const Project = ({ projectId, projectName, projectDescription }) => {
           projectId = {projectId}
           handleCheckIn={handleCheckIn}
           handleCheckOut={handleCheckOut}
-          handleJoinProject={handleJoinProject}
           handleLeaveProject={handleLeaveProject}
         />
       </div>
