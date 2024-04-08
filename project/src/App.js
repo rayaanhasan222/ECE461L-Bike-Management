@@ -177,7 +177,7 @@ function App() {
               <Route path="/login" element={<LoginPage onLoginSuccess={handleLoginSuccess}/>} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/home" element={<HomePage logout={logout}/>} />
-              <Route path="/ProjectList" element={<ProjectList />} />
+              <Route path="/ProjectList" element={<ProjectList username={username}/>} />
               <Route path="/" element={<HomePage logout={logout} />} />
           </Routes>
       </Router>

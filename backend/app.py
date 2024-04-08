@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
 from pymongo.mongo_client import MongoClient
 from flask_cors import CORS
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all domains
 
@@ -113,8 +113,8 @@ def signup():
 
     # Check if database with the same username already exists
     
-    dbNames = client['Users'].list_collection_names()
-    if form_username in dbNames:
+    colNames = client['Users'].list_collection_names()
+    if form_username in colNames:
         return jsonify({"message": "User already exists"}), 400
     else: 
         col = client['Users'][form_username]  # Create a new collection with the username
@@ -146,6 +146,38 @@ def createProject():
                 "projectDescription": formProjectDescription
             })
             return jsonify({"message": "Project created successfully"}), 201
+        
+@app.route('/join', methods=['POST'])
+def joinProject():
+    data = request.get_json()
+    formProjectID = data.get('joinProjectId')
+    formUserID = data.get('currentUsername')
+    #formUserID = "Hirsch"
+
+    if not formProjectID or not formUserID:
+        return jsonify({"message": "Project ID and User ID required"}), 400
+    
+    
+    # Check if the projectID exists in Projects Database
+    projectsDB = client.get_database("Projects")
+    projectCollectionList = projectsDB.list_collection_names()
+    if formProjectID not in projectCollectionList:
+        return jsonify({"message": "Project ID does not exist"}), 400
+    
+    # Check if the user is already in the project
+    usersDB = client.get_database("Users")
+    userCollection = usersDB[formUserID]
+    if userCollection.count_documents({"projectID": formProjectID}) > 0:
+        return jsonify({"message": "User already in project"}), 400
+    
+    # If not in the project, add project to user
+    userCollection.insert_one({
+        "projectID": formProjectID,
+        "HWSet1CheckedOut": 0,
+        "HWSet2CheckedOut": 0,
+    })
+
+    return jsonify({"message": "User joined project successfully"}), 201
 
 
 @app.route('/checkin/<projectId>', methods=['POST'])
@@ -188,35 +220,6 @@ def checkOut_hardware(projectId):
         "message": f"{qty} hardware checked out for {hwSet} in project {name}"
     })
 
-@app.route('/join', methods=['POST'])
-def joinProject():
-    data = request.get_json()
-    formProjectID = data.get('joinProjectId')
-    #formUserID = data.get('UserId')
-    formUserID = "Hirsch"
-
-    if not formProjectID or not formUserID:
-        return jsonify({"message": "Project ID and User ID required"}), 400
-    
-    
-    # Check if the projectID exists in Projects Database
-    projectsDB = client.get_database("Projects")
-    projectCollectionList = projectsDB.list_collection_names()
-    if formProjectID not in projectCollectionList:
-        return jsonify({"message": "Project ID does not exist"}), 400
-    
-    # Check if the user is already in the project
-    usersDB = client.get_database("Users")
-    userCollection = usersDB[formUserID]
-    if userCollection.count_documents({"projectID": formProjectID}) > 0:
-        return jsonify({"message": "User already in project"}), 400
-    
-    # If not in the project, add project to user
-    userCollection.insert_one({
-        "projectID": formProjectID,
-        "HWSet1CheckedOut": 0,
-        "HWSet2CheckedOut": 0,
-    })
 
     return jsonify({"message": "User joined project successfully"}), 201
 
@@ -238,7 +241,6 @@ def projectsJoined():
     # Query the "Users" database
     user_db = client["Users"]
     user_collection = user_db[userID]
-    print("USER ID HERE -------> " + userID)
     user_docs = user_collection.find({"projectID" : {"$exists" : True}})
 
     #Iterate through user documents to find project IDs
@@ -258,19 +260,6 @@ def projectsJoined():
     return jsonify({"projectIDs": project_details}), 200
 
 
-
-
-
-
-
-
-
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
  

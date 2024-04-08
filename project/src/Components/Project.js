@@ -4,7 +4,10 @@ import './Project.css'; // Import the CSS file
 import ProjectDetails from './ProjectDetails';
 import HWSet from './HWSet';
 
-const Project = ({ projectId, name, description }) => {
+
+
+const Project = ({ projectId, projectName, projectDescription }) => {
+
 
   const [userid, setUserid] = useState('exampleUserId');
   
@@ -19,7 +22,9 @@ const Project = ({ projectId, name, description }) => {
     }
   };
   
-  const handleCheckOut = async (projectId, qty, hwset) => {
+
+
+  const handleCheckOut = async (projectId, qty, userid, hwset) => {main
     try {
       const response = await fetch(`http://localhost:5000/checkout/${projectId}?qty=${qty}&userid=${userid}&hwset=${hwset}`, { method: 'POST' });
       const data = await response.json();
@@ -56,7 +61,7 @@ const Project = ({ projectId, name, description }) => {
 
   return (
     <div className="project-container">
-      <ProjectDetails name={name} description={description} />
+      <ProjectDetails projectName={projectName} description={projectDescription} />
       <div className="HW-container">
         <HWSet
           hwSetName="HWSet1"

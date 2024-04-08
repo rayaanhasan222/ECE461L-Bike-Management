@@ -23,7 +23,13 @@ const ProjectList = () => {
       }
 
       try {
+<<<<<<< HEAD
         const response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${currentUsername}`);
+=======
+        const
+        //fetch the list of project IDs the user is part of 
+        response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${currentUsername}`);
+>>>>>>> main
         if (response.ok) {
           const data = await response.json();
           setProjects(data.projectIDs);
@@ -42,25 +48,45 @@ const ProjectList = () => {
 
   const handleJoinProject = async (e) => {
     e.preventDefault();
-    try {
-      // Send a request to the backend to join the project with the given projectId
-      const response = await fetch(`/api/projects/${joinProjectId}`, {
+    console.log(currentUsername);
+    const url = "http://127.0.0.1:5000/join" 
+    const response = await fetch(url, {
         method: 'POST',
-        // Add any necessary headers and body to the request
-      });
-      if (response.ok) {
-        // If the request is successful, load the project page with the joined project
-        // You can use React Router or any other method to navigate to the project page
-        alert(`Joined project with ID: ${joinProjectId}`);
-      } else {
-        // Handle the case when the request fails
-        alert('Failed to join project');
-      }
-      // Reset the input field
-      setJoinProjectId('');
-    } catch (error) {
-      alert('An error occurred while joining the project:', error);
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ joinProjectId, currentUsername })
+    });
+    const data = await response.json();
+
+    // Display the response message
+    alert(data.message);
+
+    // Clear text field
+    setJoinProjectId('');
+
+    if(currentUsername == 'guest'){
+      console.log('No user logged in')
+      return;
     }
+
+    try {
+      const
+      //fetch the list of project IDs the user is part of 
+      response = await fetch(`http://127.0.0.1:5000/projectsJoined?userName=${currentUsername}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data.projectIDs);
+      } else {
+        alert('Failed to fetch projects');
+      }
+    } catch (error) {
+      alert('An error occurred while fetching projects:', error);
+    }
+
+
+
+
+
+
   };
 
   const handleCreateProject = async (e) => {
@@ -102,8 +128,13 @@ const ProjectList = () => {
         <Project 
           key={index} 
           projectId={project.projectID} 
+<<<<<<< HEAD
           name={project.projectName} 
           description={project.projectDescription} />
+=======
+          projectName={project.projectName} 
+          projectDescription={project.projectDescription} />
+>>>>>>> main
       ))}
     </div>
   );
