@@ -99,8 +99,8 @@ const ProjectList = () => {
         <Project 
           key={index} 
           projectId={project.projectID} 
-          name={project.projectName} 
-          users={project.projectDescription} />
+          projectName={project.projectName} 
+          projectDescription={project.projectDescription} />
       ))}
     </div>
   );

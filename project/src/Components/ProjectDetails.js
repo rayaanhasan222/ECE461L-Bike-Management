@@ -1,16 +1,12 @@
 import React from 'react';
 import './Project.css'; // Import the CSS file
 
-const ProjectDetails = ({name, users}) => {
+const ProjectDetails = ({projectName, description}) => {
 
   return (
     <div className="project-details">
-      <h3>{name}</h3>
-      <ul >
-          {/* {users.map((user, index) => (
-          <li key={index}>{user}</li>
-          ))} */}
-      </ul>
+      <h3>{projectName}</h3>
+      <p>{description}</p>
     </div>
   );
 };
