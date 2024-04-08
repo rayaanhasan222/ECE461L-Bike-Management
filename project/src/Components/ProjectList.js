@@ -43,6 +43,11 @@ const ProjectList = () => {
   
 
   const handleJoinProject = async (e) => {
+    if(currentUsername == 'guest'){
+      alert('No user logged in')
+      return;
+    }
+
     e.preventDefault();
     console.log(currentUsername);
     const url = "http://127.0.0.1:5000/join" 
@@ -59,10 +64,6 @@ const ProjectList = () => {
     // Clear text field
     setJoinProjectId('');
 
-    if(currentUsername == 'guest'){
-      console.log('No user logged in')
-      return;
-    }
 
     try {
       const
@@ -78,14 +79,14 @@ const ProjectList = () => {
       alert('An error occurred while fetching projects:', error);
     }
 
-
-
-
-
-
   };
 
   const handleCreateProject = async (e) => {
+    if(currentUsername == 'guest'){
+      alert('No user logged in')
+      return;
+    }
+
     e.preventDefault();
     // Send a request to the backend to create a project with project details
     const url = "http://127.0.0.1:5000/create" 
