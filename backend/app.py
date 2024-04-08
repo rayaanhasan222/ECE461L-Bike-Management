@@ -238,8 +238,6 @@ def leaveProject(projectId):
     })
 
 
-
-
 @app.route('/projectsJoined', methods=['GET'])
 def projectsJoined():
     userID = request.args.get('userName')
