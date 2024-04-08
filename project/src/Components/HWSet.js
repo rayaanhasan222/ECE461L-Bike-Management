@@ -6,7 +6,7 @@ import './Project.css'; // Import the CSS file
 
     
 
-const HWSet = ({ hwSetName, projectId, handleCheckIn, handleCheckOut, handleJoinProject, handleLeaveProject}) => {
+const HWSet = ({ hwSetName, projectId, handleCheckIn, handleCheckOut, handleJoinProject, handleLeaveProject, userID}) => {
   const [quantity, setQuantity] = useState(0);
   const[isJoined, setIsJoined] = useState(false);
 
@@ -37,10 +37,10 @@ const HWSet = ({ hwSetName, projectId, handleCheckIn, handleCheckOut, handleJoin
           value = {quantity}
           onChange = {handleChange}
         />
-      <Button variant="contained" onClick={() => handleCheckIn(projectId, parseInt(quantity))}>
+      <Button variant="contained" onClick={() => handleCheckIn(projectId, parseInt(quantity), userID, hwSetName)}>
         Check-in
       </Button>
-      <Button variant="contained" onClick={() => handleCheckOut(projectId, parseInt(quantity))}>
+      <Button variant="contained" onClick={() => handleCheckOut(projectId, parseInt(quantity), userID, hwSetName)}>
         Check-out
       </Button>
       <Button variant="contained" onClick={toggleJoinLeave}>
