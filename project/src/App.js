@@ -150,7 +150,6 @@ function SignUpPage() {
 
 // Define the App component with React Router for routing
 function App() {
-
   const [username, setUsername] = useState('guest');
 
   useEffect(() => {

@@ -180,7 +180,6 @@ def joinProject():
     return jsonify({"message": "User joined project successfully"}), 201
 
 
-
 @app.route('/checkin/<projectId>', methods=['POST'])
 def checkIn_hardware(projectId):
     qty = request.args.get('qty', type=int)
@@ -231,15 +230,12 @@ def checkOut_hardware(projectId):
         "message": f"{qty} hardware checked out for {hwSet} in project {name}"
     })
 
-
 @app.route('/leave/<projectId>', methods=['POST'])
 def leaveProject(projectId):
     return jsonify({
         "projectId": projectId,
         "message": f"Left project {projectId}"
     })
-
-
 
 
 @app.route('/projectsJoined', methods=['GET'])
@@ -267,6 +263,23 @@ def projectsJoined():
             })
 
     return jsonify({"projectIDs": project_details}), 200
+
+
+@app.route('/availability/<projectID>', methods=['GET'])
+def get_availability(projectID):
+    projects_db = client["Projects"]
+    project_collection = projects_db[projectID]
+    project_doc = project_collection.find_one()
+
+    if project_doc:
+        # Directly use the integer values of HWSet1Available and HWSet2Available
+        availability = {
+            "HWSet1Available": project_doc.get("HWSet1Available", 0),
+            "HWSet2Available": project_doc.get("HWSet2Available", 0)
+        }
+        return jsonify(availability), 200
+    else:
+        return jsonify({"message": "Project not found"}), 404
 
 
 if __name__ == '__main__':
